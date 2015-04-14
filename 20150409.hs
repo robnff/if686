@@ -70,3 +70,44 @@ grafosIguais :: (Ord a) => (Graph a) -> (Graph a) -> Bool
 grafosIguais (Graph listanosA listaarestasA) (Graph listanosB listaarestasB)
  | ((listaigual (quicksort listanosA) (quicksort listanosB)) && (listaigual (quicksortuplas listaarestasA) (quicksortuplas listaarestasB))) = True
  | otherwise = False
+ 
+ 
+ 
+ -- trabalho seguinte
+ 
+ 
+-- questão 1
+junta :: (Int->Int) -> (Int->Int) -> (Int->Int)
+junta (f) (g) = \x -> f (g x)
+
+compose :: (Int->Int) -> [(Int-> Int)] -> [(Int->Int)]
+compose (f) listaf = map (junta f) listaf
+
+--questão 2
+
+data Graph t = Graph [t] [(t,t)] deriving (Show, Eq, Ord)
+g = Graph [1,2,3] [(1,2), (2,3), (3,1)]
+
+t = Node 5 (Node 7 (Node 15 NilT (Node 6 NilT NilT)) (Node 2 NilT NilT)) (Node 10 NilT NilT)
+
+--map de grafo
+
+maplistarestas :: (a->b) -> [(a,a)] -> [(b,b)]
+maplistarestas _ [] = []
+maplistarestas (f) ((a,a2):as) = ((f a), (f a2)):(maplistarestas (f) as)
+
+mapgraph :: (a ->b) -> Graph a -> Graph b
+mapgraph (f) (Graph (listanos) listarestas) = Graph (map (f) listanos) (maplistarestas (f) listarestas)
+
+--fold de grafo
+
+foldgraph :: (a->b->b) -> b -> Graph a ->b
+foldgraph f b (Graph listanos listarestas) = foldr f b listanos
+
+-- questão 3
+
+percorre :: Tree t -> (t->Bool)-> Tree t
+percorre NilT _ = NilT
+percorre (Node a arvoreEsq arvoreDir) f
+ | (f a) = Node a (percorre arvoreEsq f) (percorre arvoreDir f)
+ | otherwise = NilT
